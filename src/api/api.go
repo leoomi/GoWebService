@@ -9,27 +9,27 @@ type Api struct {
 	BasePath string
 }
 
-type Service interface {
+type Controller interface {
 	Path() string
 	Middlewares() []Middleware
 	Handler() http.Handler
 }
 
-func NewApi() Api {
-	return Api{
+func NewApi() *Api {
+	return &Api{
 		Mux: http.NewServeMux(),
 	}
 }
 
-func (api Api) RegisterService(service Service) {
-	handler := service.Handler()
-	for _, middleware := range service.Middlewares() {
+func (api *Api) RegisterController(controller Controller) {
+	handler := controller.Handler()
+	for _, middleware := range controller.Middlewares() {
 		handler = middleware(handler)
 	}
 
-	api.Mux.Handle(service.Path(), handler)
+	api.Mux.Handle(controller.Path(), handler)
 }
 
-func (api Api) ListenAndServe(port string) {
+func (api *Api) ListenAndServe(port string) {
 	http.ListenAndServe(port, api.Mux)
 }

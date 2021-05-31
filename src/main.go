@@ -17,10 +17,10 @@ func middlewareHandler(handler http.Handler) http.Handler {
 }
 
 func main() {
+	database.Init()
+	defer database.Close()
 	pokemonApi := api.NewApi()
-	pokemonApi.RegisterService(pokemon.New())
+	pokemonApi.RegisterController(pokemon.New())
 	pokemonApi.ListenAndServe(":8080")
 	//log.Fatal(http.ListenAndServe(":8080", pokemonApi.Mux))
-
-	database.Close()
 }

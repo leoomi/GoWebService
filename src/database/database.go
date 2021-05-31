@@ -10,7 +10,7 @@ import (
 
 var Pool *sql.DB
 
-func init() {
+func Init() {
 	var err error
 	connStr := "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
 	Pool, err = sql.Open("postgres", connStr)
@@ -19,7 +19,6 @@ func init() {
 		// another initialization error.
 		log.Fatal("unable to use data source name", err)
 	}
-	//defer Pool.Close()
 
 	Pool.SetConnMaxLifetime(0)
 	Pool.SetMaxIdleConns(3)
