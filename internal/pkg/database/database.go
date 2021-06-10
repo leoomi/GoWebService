@@ -12,7 +12,7 @@ var Pool *sql.DB
 
 func Init() {
 	var err error
-	connStr := "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
+	connStr := "host=localhost port=5432 user=postgres password=password dbname=postgres sslmode=disable"
 	Pool, err = sql.Open("postgres", connStr)
 	if err != nil {
 		// This will not be a connection error, but a DSN parse error or

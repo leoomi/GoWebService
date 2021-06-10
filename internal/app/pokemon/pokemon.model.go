@@ -1,4 +1,4 @@
-package models
+package pokemon
 
 type Pokemon struct {
 	PokedexNumber int    `json:"pokedexNumber"`

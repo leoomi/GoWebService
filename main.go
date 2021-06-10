@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/leoomi/GoWebService/src/api"
-	"github.com/leoomi/GoWebService/src/database"
-	"github.com/leoomi/GoWebService/src/pokemon"
+	"github.com/leoomi/GoWebService/internal/app/pokemon"
+	"github.com/leoomi/GoWebService/internal/pkg/database"
+	"github.com/leoomi/GoWebService/pkg/api"
 )
 
 func middlewareHandler(handler http.Handler) http.Handler {

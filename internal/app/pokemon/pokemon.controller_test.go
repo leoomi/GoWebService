@@ -6,9 +6,6 @@ import (
 	"io"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/leoomi/GoWebService/src/pokemon/models"
-	"github.com/leoomi/GoWebService/src/pokemon/service/mock"
 )
 
 func TestPost(t *testing.T) {
@@ -28,14 +25,14 @@ func TestPost(t *testing.T) {
 func TestGet(t *testing.T) {
 	w := httptest.NewRecorder()
 
-	serviceResult := models.Pokemon{
+	serviceResult := Pokemon{
 		PokedexNumber: 1,
 		Name:          "Name",
 	}
-	mockParams := mock.ServiceMockParams{
+	mockParams := ServiceMockParams{
 		GetReturn: serviceResult,
 	}
-	service := mock.NewServiceMock(mockParams)
+	service := NewServiceMock(mockParams)
 
 	controller := pokemonController{
 		service: service,

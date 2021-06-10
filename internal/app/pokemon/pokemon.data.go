@@ -1,45 +1,43 @@
-package data
+package pokemon
 
 import (
 	"database/sql"
 
-	"github.com/leoomi/GoWebService/src/database"
-	models "github.com/leoomi/GoWebService/src/pokemon/models"
+	"github.com/leoomi/GoWebService/internal/pkg/database"
 	_ "github.com/lib/pq"
 )
 
-type pokemon = models.Pokemon
-type PokemonData interface {
-	GetPokemon(pokedexNumber int) (pokemon, error)
-	PostPokemon(pokemon pokemon)
+type pokemonData interface {
+	GetPokemon(pokedexNumber int) (Pokemon, error)
+	PostPokemon(pokemon Pokemon)
 }
 
 type PokemonDataPG struct {
 	db *sql.DB
 }
 
-func New() PokemonData {
+func newData() pokemonData {
 	return &PokemonDataPG{
 		db: database.Pool,
 	}
 }
 
-func (data *PokemonDataPG) GetPokemon(pokedexNumber int) (pokemon, error) {
+func (data *PokemonDataPG) GetPokemon(pokedexNumber int) (Pokemon, error) {
 	row := data.db.QueryRow("SELECT * FROM pokemon where pokedexNumber = $1", pokedexNumber)
 	if row.Err() != nil {
-		return pokemon{}, row.Err()
+		return Pokemon{}, row.Err()
 	}
 
-	var pokemon pokemon
+	var pokemon Pokemon
 	err := row.Scan(&pokemon.PokedexNumber, &pokemon.Name)
 	if err != nil {
-		return models.Pokemon{}, err
+		return Pokemon{}, err
 	}
 
 	return pokemon, nil
 }
 
-func (data *PokemonDataPG) PostPokemon(pokemon pokemon) {
+func (data *PokemonDataPG) PostPokemon(pokemon Pokemon) {
 	var err error
 	sqlStatement := `
 INSERT INTO users (pokedexNumber, name)

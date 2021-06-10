@@ -1,16 +1,13 @@
-package service
+package pokemon
 
 import (
 	"errors"
 	"testing"
-
-	"github.com/leoomi/GoWebService/src/pokemon/data/mock"
-	"github.com/leoomi/GoWebService/src/pokemon/models"
 )
 
-func TestGetPokemon(t *testing.T) {
-	var mockParams = mock.DataMockParams{
-		GetReturn: models.Pokemon{
+func TestServiceGetPokemon(t *testing.T) {
+	var mockParams = DataMockParams{
+		GetReturn: Pokemon{
 			PokedexNumber: 0,
 			Name:          "Name",
 		},
@@ -18,12 +15,12 @@ func TestGetPokemon(t *testing.T) {
 	}
 
 	var service = pokemonServiceImpl{
-		data: mock.NewDataMock(mockParams),
+		data: NewDataMock(mockParams),
 	}
 
 	var result, _ = service.Get(1)
 
-	if result.PokedexNumber != 1 {
+	if result.PokedexNumber != 0 {
 		t.Error("Incorrect podexNumber")
 	}
 
@@ -33,13 +30,13 @@ func TestGetPokemon(t *testing.T) {
 }
 
 func TestGetPokemon2(t *testing.T) {
-	var mockParams = mock.DataMockParams{
-		GetReturn: models.Pokemon{},
+	var mockParams = DataMockParams{
+		GetReturn: Pokemon{},
 		GetError:  errors.New("error"),
 	}
 
 	var service = pokemonServiceImpl{
-		data: mock.NewDataMock(mockParams),
+		data: NewDataMock(mockParams),
 	}
 
 	var result, error = service.Get(1)

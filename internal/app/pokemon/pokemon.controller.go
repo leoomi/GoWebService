@@ -4,19 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/leoomi/GoWebService/src/api"
-	"github.com/leoomi/GoWebService/src/pokemon/models"
-	"github.com/leoomi/GoWebService/src/pokemon/service"
+	"github.com/leoomi/GoWebService/pkg/api"
 )
 
-type Pokemon = models.Pokemon
-
 type pokemonController struct {
-	service service.PokemonService
+	service PokemonService
 }
 
 func New() api.Controller {
-	var service = service.New()
+	var service = newService()
 
 	return &pokemonController{
 		service: service,
