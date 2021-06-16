@@ -1,35 +1,51 @@
 package api
 
-import "net/http"
+import (
+	"log"
+	"net/http"
 
-type Middleware func(http.Handler) http.Handler
+	"github.com/julienschmidt/httprouter"
+)
+
+type Middleware func(httprouter.Handle) httprouter.Handle
 
 type Api struct {
-	Mux      *http.ServeMux
-	BasePath string
+	router *httprouter.Router
+}
+
+type Route struct {
+	Path    string
+	Method  string
+	Handler httprouter.Handle
 }
 
 type Controller interface {
-	Path() string
+	Routes() []Route
 	Middlewares() []Middleware
-	Handler() http.Handler
 }
 
 func NewApi() *Api {
 	return &Api{
-		Mux: http.NewServeMux(),
+		router: httprouter.New(),
 	}
 }
 
 func (api *Api) RegisterController(controller Controller) {
-	handler := controller.Handler()
-	for _, middleware := range controller.Middlewares() {
-		handler = middleware(handler)
-	}
+	for _, route := range controller.Routes() {
+		handler := route.Handler
+		for _, middleware := range controller.Middlewares() {
+			handler = middleware(handler)
+		}
 
-	api.Mux.Handle(controller.Path(), handler)
+		switch route.Method {
+		case http.MethodGet:
+			api.router.GET(route.Path, handler)
+		case http.MethodPost:
+			api.router.POST(route.Path, handler)
+		}
+	}
 }
 
 func (api *Api) ListenAndServe(port string) {
-	http.ListenAndServe(port, api.Mux)
+	log.Fatal(http.ListenAndServe(":8080", api.router))
 }

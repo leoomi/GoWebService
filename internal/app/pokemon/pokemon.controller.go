@@ -3,7 +3,9 @@ package pokemon
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/leoomi/GoWebService/pkg/api"
 )
 
@@ -27,21 +29,29 @@ func (*pokemonController) Middlewares() []api.Middleware {
 	return make([]api.Middleware, 0)
 }
 
-func (controller *pokemonController) Handler() http.Handler {
-	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		switch req.Method {
-		case http.MethodPost:
-			controller.post(res, req)
-		case http.MethodGet:
-			controller.get(res, req)
-		case http.MethodPut:
-			controller.get(res, req)
-		}
-	})
+func (controller *pokemonController) Routes() []api.Route {
+	return []api.Route{{
+		Path:    "/pokemon/:id",
+		Method:  http.MethodGet,
+		Handler: controller.get,
+	}, {
+		Path:    "/pokemon",
+		Method:  http.MethodPost,
+		Handler: controller.post,
+	}}
 }
 
-func (controller *pokemonController) get(res http.ResponseWriter, _ *http.Request) {
-	pokemon, err := controller.service.Get(1)
+func (controller *pokemonController) get(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	idString := ps.ByName("id")
+	id, err := strconv.Atoi(idString)
+
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		res.Write([]byte(err.Error()))
+		return
+	}
+
+	pokemon, err := controller.service.Get(id)
 
 	if err != nil {
 		res.Write([]byte(err.Error()))
@@ -52,6 +62,6 @@ func (controller *pokemonController) get(res http.ResponseWriter, _ *http.Reques
 	res.Write(pokemonJSON)
 }
 
-func (*pokemonController) post(res http.ResponseWriter, _ *http.Request) {
+func (*pokemonController) post(res http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 	res.Write([]byte("banana"))
 }

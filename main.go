@@ -22,5 +22,4 @@ func main() {
 	pokemonApi := api.NewApi()
 	pokemonApi.RegisterController(pokemon.New())
 	pokemonApi.ListenAndServe(":8080")
-	//log.Fatal(http.ListenAndServe(":8080", pokemonApi.Mux))
 }
