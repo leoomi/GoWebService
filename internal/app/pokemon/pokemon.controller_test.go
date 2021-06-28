@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func TestPost(t *testing.T) {
@@ -13,11 +15,11 @@ func TestPost(t *testing.T) {
 
 	controller := pokemonController{}
 
-	controller.post(w, nil)
+	controller.post(w, nil, nil)
 
 	body, _ := io.ReadAll(w.Body)
 
-	if string(body) != "bandana" {
+	if string(body) != "banana" {
 		t.Error("wrong body")
 	}
 }
@@ -38,7 +40,7 @@ func TestGet(t *testing.T) {
 		service: service,
 	}
 
-	controller.get(w, nil)
+	controller.get(w, nil, httprouter.Params{})
 
 	body, _ := io.ReadAll(w.Body)
 

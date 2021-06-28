@@ -2,6 +2,7 @@ package pokemon
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -62,6 +63,23 @@ func (controller *pokemonController) get(res http.ResponseWriter, req *http.Requ
 	res.Write(pokemonJSON)
 }
 
-func (*pokemonController) post(res http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
+func (controller *pokemonController) post(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	defer req.Body.Close()
+	body, err := io.ReadAll(req.Body)
+
+	if err != nil {
+		res.Write([]byte(err.Error()))
+		return
+	}
+
+	var pokemon Pokemon
+	err = json.Unmarshal(body, &pokemon)
+
+	if err != nil {
+		res.Write([]byte(err.Error()))
+		return
+	}
+
+	controller.service.Post(pokemon)
 	res.Write([]byte("banana"))
 }

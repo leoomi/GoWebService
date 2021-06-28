@@ -9,7 +9,7 @@ import (
 
 type pokemonData interface {
 	GetPokemon(pokedexNumber int) (Pokemon, error)
-	PostPokemon(pokemon Pokemon)
+	PostPokemon(pokemon Pokemon) error
 }
 
 type PokemonDataPG struct {
@@ -23,7 +23,11 @@ func newData() pokemonData {
 }
 
 func (data *PokemonDataPG) GetPokemon(pokedexNumber int) (Pokemon, error) {
-	row := data.db.QueryRow("SELECT * FROM pokemon where pokedexNumber = $1", pokedexNumber)
+	sqlStatement := `
+SELECT * FROM pokemon
+WHERE pokedexNumber = $1
+	`
+	row := data.db.QueryRow(sqlStatement, pokedexNumber)
 	if row.Err() != nil {
 		return Pokemon{}, row.Err()
 	}
@@ -37,13 +41,15 @@ func (data *PokemonDataPG) GetPokemon(pokedexNumber int) (Pokemon, error) {
 	return pokemon, nil
 }
 
-func (data *PokemonDataPG) PostPokemon(pokemon Pokemon) {
+func (data *PokemonDataPG) PostPokemon(pokemon Pokemon) error {
 	var err error
 	sqlStatement := `
-INSERT INTO users (pokedexNumber, name)
+INSERT INTO pokemon (pokedexNumber, name)
 VALUES ($1, $2)`
 	_, err = data.db.Exec(sqlStatement, pokemon.PokedexNumber, pokemon.Name)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }

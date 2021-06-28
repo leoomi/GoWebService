@@ -4,13 +4,14 @@ type PokemonDataMock struct {
 	GetFn     func(int) (Pokemon, error)
 	GetCalled bool
 
-	PostFn     func(Pokemon)
+	PostFn     func(Pokemon) error
 	PostCalled bool
 }
 
 type DataMockParams struct {
 	GetReturn Pokemon
 	GetError  error
+	PostError error
 }
 
 func NewDataMock(params DataMockParams) pokemonData {
@@ -18,7 +19,9 @@ func NewDataMock(params DataMockParams) pokemonData {
 		GetFn: func(_ int) (Pokemon, error) {
 			return params.GetReturn, params.GetError
 		},
-		PostFn: func(_ Pokemon) {},
+		PostFn: func(_ Pokemon) error {
+			return params.PostError
+		},
 	}
 }
 
@@ -27,7 +30,7 @@ func (mock *PokemonDataMock) GetPokemon(pokedexNumber int) (Pokemon, error) {
 	return mock.GetFn(pokedexNumber)
 }
 
-func (mock *PokemonDataMock) PostPokemon(pokemon Pokemon) {
+func (mock *PokemonDataMock) PostPokemon(pokemon Pokemon) error {
 	mock.PostCalled = true
-	mock.PostFn(pokemon)
+	return mock.PostFn(pokemon)
 }
